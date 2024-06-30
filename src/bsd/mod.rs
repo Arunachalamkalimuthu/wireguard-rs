@@ -5,7 +5,7 @@ mod timespec;
 mod wgio;
 
 use std::{
-    collections::HashMap, mem::size_of, net::IpAddr, os::fd::OwnedFd, ptr::from_ref,
+    collections::HashMap, mem::size_of, net::IpAddr, os::fd::OwnedFd,
     slice::from_raw_parts,
 };
 
@@ -57,7 +57,7 @@ unsafe fn cast_ref<T>(bytes: &[u8]) -> &T {
 
 /// Cast `T' to bytes.
 unsafe fn cast_bytes<T: Sized>(p: &T) -> &[u8] {
-    from_raw_parts(from_ref::<T>(p).cast::<u8>(), size_of::<T>())
+    from_raw_parts((p as *const T).cast::<u8>(), size_of::<T>())
 }
 
 /// Create socket for ioctl communication.
@@ -84,7 +84,7 @@ impl From<IoError> for WireguardInterfaceError {
 impl IpAddrMask {
     #[must_use]
     fn try_from_nvlist(nvlist: &NvList) -> Option<Self> {
-        // cidr is mendatory
+        // cidr is mandatory
         nvlist.get_number(NV_CIDR).and_then(|cidr| {
             match nvlist.get_binary(NV_IPV4) {
                 Some(ipv4) => <[u8; 4]>::try_from(ipv4).ok().map(IpAddr::from),
