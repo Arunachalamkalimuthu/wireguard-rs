@@ -158,7 +158,7 @@ impl<'a> Host {
 
         nvlist.append_bool(NV_REPLACE_PEERS, true);
         if !self.peers.is_empty() {
-            let peers = self.peers.values().map(Peer::as_nvlist).collect();
+            let peers: Vec<NvList> = self.peers.values().map(Peer::as_nvlist).collect();
             nvlist.append_nvlist_array(NV_PEERS, peers);
         }
 
